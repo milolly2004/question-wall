@@ -1,0 +1,42 @@
+{
+  "entities": {
+    "Question": {
+      "title": "Question",
+      "description": "A question submitted to the classroom Question Wall",
+      "type": "object",
+      "properties": {
+        "question": {
+          "type": "string",
+          "description": "The question submitted by a student",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "answer": {
+          "type": "string",
+          "description": "The teacher's answer to the question",
+          "maxLength": 5000
+        },
+        "status": {
+          "type": "string",
+          "description": "Status of question (unanswered or answered)",
+          "enum": ["unanswered", "answered", "needs_answer"]
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp when the question was submitted"
+        },
+        "answeredAt": {
+          "type": "string",
+          "description": "Timestamp when the question was answered"
+        }
+      },
+      "required": ["question", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/questions/{questionId}": {
+      "schema": "Question",
+      "description": "Collection of student questions and teacher answers"
+    }
+  }
+}

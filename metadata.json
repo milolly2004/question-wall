@@ -1,0 +1,7 @@
+{
+  "name": "Grade 4 English Question Wall",
+  "description": "A simple real-time classroom Question Wall with a mobile-friendly student view to submit questions anonymously and a projector-friendly teacher dashboard to see and answer questions live.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

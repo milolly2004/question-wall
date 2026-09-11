@@ -1,0 +1,69 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+    
+    function incoming() {
+      return request.resource.data;
+    }
+    
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidQuestion(data) {
+      return data.question is string 
+        && data.question.size() >= 1 
+        && data.question.size() <= 1000
+        && (!('status' in data) || (data.status is string && data.status.size() <= 50))
+        && (!('answer' in data) || (data.answer is string && data.answer.size() <= 5000))
+        && (!('createdAt' in data) || (data.createdAt is string && data.createdAt.size() <= 50) || data.createdAt is timestamp)
+        && (!('answeredAt' in data) || (data.answeredAt is string && data.answeredAt.size() <= 50) || data.answeredAt is timestamp)
+        && (!('category' in data) || (data.category is string && data.category.size() <= 50))
+        && (!('studentName' in data) || (data.studentName is string && data.studentName.size() <= 60))
+        && (!('helpfulCount' in data) || (data.helpfulCount is number && data.helpfulCount >= 0))
+        && (!('tip' in data) || (data.tip is string && data.tip.size() <= 1000))
+        && (!('examples' in data) || (data.examples is list && data.examples.size() <= 10));
+    }
+
+    // Allow connection test
+    match /test/{docId} {
+      allow read: if true;
+    }
+
+    match /questions/{questionId} {
+      // Single document get
+      allow get: if isValidId(questionId);
+
+      // List questions collection in real time for dashboard and students
+      allow list: if true;
+
+      // Students can submit questions anonymously
+      allow create: if isValidId(questionId) 
+        && isValidQuestion(incoming());
+
+      // Teacher can submit or edit answer
+      allow update: if isValidId(questionId)
+        && isValidQuestion(incoming())
+        && (
+          incoming().diff(existing()).affectedKeys().hasOnly(['answer', 'status'])
+          || incoming().diff(existing()).affectedKeys().hasOnly(['answer', 'status', 'answeredAt'])
+          || incoming().diff(existing()).affectedKeys().hasOnly(['answer'])
+          || incoming().diff(existing()).affectedKeys().hasOnly(['helpfulCount'])
+          || incoming().diff(existing()).affectedKeys().hasOnly(['answer', 'status', 'helpfulCount'])
+          || incoming().diff(existing()).affectedKeys().hasOnly(['answer', 'status', 'tip'])
+        );
+
+      // Allow deletion if needed
+      allow delete: if isValidId(questionId);
+    }
+
+    // Default deny for everything else
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
