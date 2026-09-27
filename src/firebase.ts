@@ -59,4 +59,13 @@ export interface ClassroomQuestion {
   status: 'unanswered' | 'answered';
   createdAt: string;
   answeredAt?: string;
+
+  // Animal selected by the student
+  animal?: string;
+
+  // Identifies the device that submitted the question
+  ownerId?: string;
+
+  // Number of students who clicked "สงสัยเหมือนกัน"
+  helpfulCount: number;
 }
