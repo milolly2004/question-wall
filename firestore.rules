@@ -18,15 +18,41 @@ service cloud.firestore {
       return data.question is string 
         && data.question.size() >= 1 
         && data.question.size() <= 1000
-        && (!('status' in data) || (data.status is string && data.status.size() <= 50))
-        && (!('answer' in data) || (data.answer is string && data.answer.size() <= 5000))
-        && (!('createdAt' in data) || (data.createdAt is string && data.createdAt.size() <= 50) || data.createdAt is timestamp)
-        && (!('answeredAt' in data) || (data.answeredAt is string && data.answeredAt.size() <= 50) || data.answeredAt is timestamp)
-        && (!('category' in data) || (data.category is string && data.category.size() <= 50))
-        && (!('studentName' in data) || (data.studentName is string && data.studentName.size() <= 60))
-        && (!('helpfulCount' in data) || (data.helpfulCount is number && data.helpfulCount >= 0))
-        && (!('tip' in data) || (data.tip is string && data.tip.size() <= 1000))
-        && (!('examples' in data) || (data.examples is list && data.examples.size() <= 10));
+        
+        && (!('status' in data) 
+          || (data.status is string && data.status.size() <= 50))
+        
+        && (!('answer' in data) 
+          || (data.answer is string && data.answer.size() <= 5000))
+        
+        && (!('createdAt' in data) 
+          || (data.createdAt is string && data.createdAt.size() <= 50) 
+          || data.createdAt is timestamp)
+        
+        && (!('answeredAt' in data) 
+          || (data.answeredAt is string && data.answeredAt.size() <= 50) 
+          || data.answeredAt is timestamp)
+        
+        && (!('category' in data) 
+          || (data.category is string && data.category.size() <= 50))
+        
+        && (!('studentName' in data) 
+          || (data.studentName is string && data.studentName.size() <= 60))
+        
+        && (!('animal' in data) 
+          || (data.animal is string && data.animal.size() <= 20))
+        
+        && (!('ownerId' in data) 
+          || (data.ownerId is string && data.ownerId.size() <= 128))
+        
+        && (!('helpfulCount' in data) 
+          || (data.helpfulCount is number && data.helpfulCount >= 0))
+        
+        && (!('tip' in data) 
+          || (data.tip is string && data.tip.size() <= 1000))
+        
+        && (!('examples' in data) 
+          || (data.examples is list && data.examples.size() <= 10));
     }
 
     // Allow connection test
@@ -46,6 +72,7 @@ service cloud.firestore {
         && isValidQuestion(incoming());
 
       // Teacher can submit or edit answer
+      // Students can also update helpfulCount
       allow update: if isValidId(questionId)
         && isValidQuestion(incoming())
         && (
